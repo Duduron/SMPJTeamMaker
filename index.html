@@ -11,6 +11,7 @@
     }
     body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial; padding:20px; background:#0f172a; color:#e6eef8}
     h1{font-size:18px; margin:0 0 12px}
+    h2{margin:0 0 8px;}
     .wrap{max-width:1200px; margin:0 auto}
     .grid{
       display:grid;
@@ -18,7 +19,7 @@
       gap:var(--gap);
       align-items:stretch;
     }
-    .card{
+    .card, .map-card{
       position:relative;
       cursor:pointer;
       overflow:hidden;
@@ -34,11 +35,11 @@
       transition:all .18s;
       border:2px solid transparent;
     }
-    .card.not-selected{
+    .card.not-selected, .map-card.not-selected{
       opacity:.6;
       filter:grayscale(100%);
     }
-    .card.selected{
+    .card.selected, .map-card.selected{
       border-color:#0ea5a4;
       background:#0f766e;
       color:#fff;
@@ -48,7 +49,7 @@
     .team-label{position:absolute; left:6px; top:6px; padding:6px 8px; border-radius:999px; font-weight:600; color:white; font-size:13px}
     .team-blue{background:linear-gradient(90deg,#2bb0ff,#1b8fff)}
     .team-red{background:linear-gradient(90deg,#ff6b6b,#ff3b3b)}
-    .controls{display:flex; gap:12px; align-items:center; margin:14px 0}
+    .controls{display:flex; gap:12px; align-items:center; margin:14px 0; flex-wrap:wrap;}
     button{background:#0b1220;color:#e6eef8;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
     button.primary{background:#0ea5a4}
     button:disabled{opacity:.4; cursor:not-allowed}
@@ -72,7 +73,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>최대 4명 선택 후 팀 배정</h1>
+    <h1>캐릭터 4명을 선택해주세요</h1>
     <div class="controls">
       <div class="info">선택된 인원: <strong id="count">0</strong> / 4</div>
       <button id="assignBtn" class="primary" disabled>팀 랜덤 배정</button>
@@ -81,6 +82,15 @@
 
     <div class="grid" id="grid"></div>
     <div class="result" id="result" aria-live="polite"></div>
+
+    <!-- 맵 랜덤 선택 섹션 -->
+    <div class="map-section" style="margin-top:30px;">
+      <h2>맵을 선택해주세요</h2>
+      <div class="grid" id="mapButtons" style="grid-template-columns:repeat(7,1fr); gap:8px;"></div>
+      <button id="mapBtn" class="primary" style="margin-top:12px;">랜덤 맵 선택</button>
+      <div id="mapResult" style="font-size:16px; font-weight:700; margin-top:8px;"></div>
+    </div>
+  </div>
 
   <script>
     // 이름 목록
@@ -190,6 +200,38 @@
     });
     assignBtn.addEventListener('click', ()=>assignTeams());
     renderGrid();
+
+    // ================= 맵 랜덤 선택 기능 =================
+    const maps = ['거대 꽃충이와 과자의 숲','주사위 스피드웨이','굼바 아일랜드','두근두근 쇼핑몰','쿠파의 데인저러스 베이스','마리오의 레인보우 캐슬','웨스턴 랜드'];
+    const mapButtonsContainer = document.getElementById('mapButtons');
+    const mapBtn = document.getElementById('mapBtn');
+    const mapResult = document.getElementById('mapResult');
+
+    // 맵 버튼 생성 (처음엔 모두 선택됨)
+    const mapButtons = [];
+    maps.forEach((mapName, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'map-card selected'; // 처음부터 선택됨
+      btn.textContent = mapName;
+      btn.dataset.idx = idx;
+      btn.addEventListener('click', ()=>{
+        btn.classList.toggle('selected');
+        btn.classList.toggle('not-selected');
+      });
+      mapButtons.push(btn);
+      mapButtonsContainer.appendChild(btn);
+    });
+
+    // 랜덤 선택
+    mapBtn.addEventListener('click', ()=>{
+      const activeMaps = mapButtons.filter(b=>b.classList.contains('selected'));
+      if(activeMaps.length === 0){
+        mapResult.textContent = '선택 가능한 맵이 없습니다!';
+        return;
+      }
+      const randomMap = activeMaps[Math.floor(Math.random()*activeMaps.length)];
+      mapResult.textContent = `선택된 맵: ${randomMap.textContent}`;
+    });
   </script>
 </body>
 </html>
