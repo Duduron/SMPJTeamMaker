@@ -25,7 +25,7 @@
       overflow:hidden;
       border-radius:8px;
       background:#1e293b;
-      aspect-ratio:1/1;
+      aspect-ratio:2/1;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -34,6 +34,9 @@
       font-size:14px;
       transition:all .18s;
       border:2px solid transparent;
+      white-space: normal;
+      text-align: center;
+      line-height:1.2em;
     }
     .card.not-selected, .map-card.not-selected{
       opacity:.6;
@@ -73,7 +76,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>캐릭터 4명을 선택해주세요</h1>
+    <h2>캐릭터 4명을 선택해주세요</h2>
     <div class="controls">
       <div class="info">선택된 인원: <strong id="count">0</strong> / 4</div>
       <button id="assignBtn" class="primary" disabled>팀 랜덤 배정</button>
@@ -93,7 +96,6 @@
   </div>
 
   <script>
-    // 이름 목록
     const names = [
       '마리오','루이지','피치','데이지','와리오','와루이지','키노피오','키노피코','요시','캐서린','동키콩',
       '로젤리나','쿠파','쿠파주니어','굼바','엉금엉금','부끄부끄','헤이호','쪼루뚜','가봉','폴린','닌군'
@@ -114,7 +116,8 @@
         card.className = 'card not-selected';
         card.type = 'button';
         card.dataset.idx = idx;
-        card.textContent = name;
+        // '/' 기준 줄바꿈 적용
+        card.innerHTML = name.replace(/\//g,'<br>');
         card.addEventListener('click', ()=>toggleSelect(idx));
         grid.appendChild(card);
       });
@@ -188,7 +191,7 @@
     function makePlayer(idx){
       const wrap = document.createElement('div'); wrap.className='player';
       const t = document.createElement('div');
-      t.innerHTML = `<div class="player-name">${names[idx]}</div>`;
+      t.innerHTML = `<div class="player-name">${names[idx].replace(/\//g,'<br>')}</div>`;
       wrap.appendChild(t);
       return wrap;
     }
@@ -202,7 +205,7 @@
     renderGrid();
 
     // ================= 맵 랜덤 선택 기능 =================
-    const maps = ['거대 꽃충이와 과자의 숲','주사위 스피드웨이','굼바 아일랜드','두근두근 쇼핑몰','쿠파의 데인저러스 베이스','마리오의 레인보우 캐슬','웨스턴 랜드'];
+    const maps = ['거대 꽃충이와/과자의 숲','주사위 스피드웨이','굼바 아일랜드','두근두근 쇼핑몰','쿠파의 데인저러스/베이스','마리오의 레인보우/캐슬','웨스턴 랜드'];
     const mapButtonsContainer = document.getElementById('mapButtons');
     const mapBtn = document.getElementById('mapBtn');
     const mapResult = document.getElementById('mapResult');
@@ -212,7 +215,8 @@
     maps.forEach((mapName, idx)=>{
       const btn = document.createElement('button');
       btn.className = 'map-card selected'; // 처음부터 선택됨
-      btn.textContent = mapName;
+      // '/' 기준 줄바꿈 적용
+      btn.innerHTML = mapName.replace(/\//g,'<br>');
       btn.dataset.idx = idx;
       btn.addEventListener('click', ()=>{
         btn.classList.toggle('selected');
@@ -230,7 +234,7 @@
         return;
       }
       const randomMap = activeMaps[Math.floor(Math.random()*activeMaps.length)];
-      mapResult.textContent = `선택된 맵: ${randomMap.textContent}`;
+      mapResult.textContent = `선택된 맵: ${randomMap.textContent.replace(/\n/g,'')}`;
     });
   </script>
 </body>
