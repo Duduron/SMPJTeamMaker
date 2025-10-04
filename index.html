@@ -19,7 +19,6 @@
       gap:var(--gap);
       align-items:stretch;
     }
-    /* 캐릭터 카드 (1:1) */
     .card{
       position:relative;
       cursor:pointer;
@@ -35,11 +34,10 @@
       font-size:14px;
       transition:all .18s;
       border:2px solid transparent;
-      white-space: normal;
+      white-space: pre-line; /* 줄바꿈 허용 */
       text-align: center;
       line-height:1.2em;
     }
-    /* 맵 카드 (2:1) */
     .map-card{
       position:relative;
       cursor:pointer;
@@ -55,7 +53,7 @@
       font-size:14px;
       transition:all .18s;
       border:2px solid transparent;
-      white-space: normal;
+      white-space: pre-line; /* 줄바꿈 허용 */
       text-align: center;
       line-height:1.2em;
     }
@@ -79,8 +77,22 @@
     button:disabled{opacity:.4; cursor:not-allowed}
     .info{font-size:13px; opacity:.9}
     .result{margin-top:14px; display:flex; gap:12px}
-    .team-box{flex:1; padding:12px; border-radius:8px; background:rgba(255,255,255,0.04)}
-    .player{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+    .team-box{
+  flex:1;
+  padding:12px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 가로 중앙 */
+}
+
+.team-box > div:first-child {
+  font-weight:700;
+  margin-bottom:8px;
+  text-align:center; /* 텍스트 중앙 */
+}
+    .player{display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-direction: column;}
     .player-name{font-weight:600}
     .small{font-size:12px; opacity:.85}
     @media (max-width:1100px){:root{--cols:6}}
@@ -107,7 +119,6 @@
     <div class="grid" id="grid"></div>
     <div class="result" id="result" aria-live="polite"></div>
 
-    <!-- 맵 랜덤 선택 섹션 -->
     <div class="map-section" style="margin-top:30px;">
       <h2>맵을 선택해주세요</h2>
       <div class="grid" id="mapButtons" style="grid-template-columns:repeat(7,1fr); gap:8px;"></div>
@@ -119,7 +130,7 @@
   <script>
     const names = [
       '마리오','루이지','피치','데이지','와리오','와루이지','키노피오','키노피코','요시','캐서린','동키콩',
-      '로젤리나','쿠파','쿠파주니어','굼바','엉금엉금','부끄부끄','헤이호','쪼르뚜','가봉','폴린','닌군'
+      '로젤리나','쿠파','쿠파주니어','굼바','엉금엉금','부끄부끄','헤이호','쪼루뚜','가봉','폴린','닌군'
     ];
 
     const grid = document.getElementById('grid');
@@ -137,7 +148,7 @@
         card.className = 'card not-selected';
         card.type = 'button';
         card.dataset.idx = idx;
-        card.textContent = name;
+        card.innerHTML = name.replace(/\//g,'<br>'); // 슬래시를 줄바꿈으로
         card.addEventListener('click', ()=>toggleSelect(idx));
         grid.appendChild(card);
       });
@@ -171,7 +182,6 @@
         const j = Math.floor(Math.random()*(i+1));
         [arr[i],arr[j]] = [arr[j],arr[i]];
       }
-      // 1:1 랜덤 배정
       const blue = [arr[0], arr[2]];
       const red  = [arr[1], arr[3]];
 
@@ -208,7 +218,8 @@
     function makePlayer(idx){
       const wrap = document.createElement('div'); wrap.className='player';
       const t = document.createElement('div');
-      t.innerHTML = `<div class="player-name">${names[idx]}</div>`;
+      t.innerHTML = names[idx].replace(/\//g,'<br>'); // 슬래시 줄바꿈 적용
+      t.className = 'player-name';
       wrap.appendChild(t);
       return wrap;
     }
@@ -222,7 +233,7 @@
     renderGrid();
 
     // ================= 맵 랜덤 선택 기능 =================
-    const maps = ['거대 꽃충이와 과자의 숲','주사위 스피드웨이','굼바 아일랜드','두근두근 쇼핑몰','쿠파의 데인저러스 베이스','마리오의 레인보우 캐슬','웨스턴 랜드'];
+    const maps = ['거대 꽃충이와/과자의 숲','주사위 스피드웨이','굼바 아일랜드','두근두근 쇼핑몰','쿠파의 데인저러스/베이스','마리오의 레인보우/캐슬','웨스턴 랜드'];
     const mapButtonsContainer = document.getElementById('mapButtons');
     const mapBtn = document.getElementById('mapBtn');
     const mapResult = document.getElementById('mapResult');
@@ -230,8 +241,8 @@
     const mapButtons = [];
     maps.forEach((mapName, idx)=>{
       const btn = document.createElement('button');
-      btn.className = 'map-card selected'; // 처음부터 선택됨
-      btn.textContent = mapName;
+      btn.className = 'map-card selected';
+      btn.innerHTML = mapName.replace(/\//g,'<br>');
       btn.dataset.idx = idx;
       btn.addEventListener('click', ()=>{
         btn.classList.toggle('selected');
@@ -253,4 +264,3 @@
   </script>
 </body>
 </html>
-
