@@ -1,2 +1,2 @@
 # SMPJTeamMaker
-지피티딸
+지피티딸깍
